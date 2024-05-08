@@ -30,6 +30,10 @@ pub struct GlobalOptions {
     /// `docker` image to use for cross-compiling
     #[clap(long, default_value = "ghcr.io/trunnion/cargo-acap")]
     docker_image: String,
+
+    /// Cross-compile on host instead of in a Docker container
+    #[clap(long)]
+    no_docker: bool,
 }
 
 #[derive(Parser)]
@@ -161,7 +165,13 @@ impl Invocation {
         acap_target
     }
 
-    pub fn docker_run_command(&self) -> std::process::Command {
+    pub fn command(&self, program:&str) -> std::process::Command {
+        if self.global_options.no_docker {
+            let mut cmd = std::process::Command::new(program);
+            cmd.env("CARGO_TARGET_DIR", &self.acap_target().display().to_string());
+            return cmd
+        }
+
         // Start constructing the command
         let mut docker = std::process::Command::new("docker");
         docker.args(&["run", "--rm"]);
@@ -224,6 +234,7 @@ impl Invocation {
         }
 
         docker.arg(&self.global_options.docker_image);
+        docker.arg(program);
         docker
     }
 

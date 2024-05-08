@@ -41,8 +41,8 @@ impl Build {
             docker.args(&["images", &global_options.docker_image]);
             invocation.run_to_completion(docker);
 
-            let mut docker = invocation.docker_run_command();
-            docker.args(&["rustc", "version"]);
+            let mut docker = invocation.command("rustc");
+            docker.args(&[ "version"]);
             invocation.run_to_completion(docker);
         }
 
@@ -87,9 +87,8 @@ impl<'a> BuildOp<'a> {
     }
 
     fn cargo_build_in_docker(&self) -> PathBuf {
-        let mut docker = self.invocation.docker_run_command();
+        let mut docker = self.invocation.command("cargo");
         docker.args(&[
-            "cargo",
             "build",
             "--target",
             self.target.rust_target_triple(),
@@ -142,8 +141,8 @@ impl<'a> BuildOp<'a> {
     fn strip_executable(&self, built_executable_path: &Path) -> PathBuf {
         let stripped_executable_path = built_executable_path.with_extension("stripped");
 
-        let mut docker = self.invocation.docker_run_command();
-        docker.args(&[self.target.docker_objcopy_command(), "--strip-all"]);
+        let mut docker = self.invocation.command(self.target.docker_objcopy_command());
+        docker.args(&["--strip-all"]);
         docker.arg(&built_executable_path);
         docker.arg(&stripped_executable_path);
 

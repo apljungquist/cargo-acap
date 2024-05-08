@@ -2,6 +2,33 @@
 
 A tool to build Rust programs for the [AXIS Camera Application Platform](https://www.axis.com/en-us/products/analytics/acap).
 
+## Containerized builds
+
+```sh
+cargo build
+docker run \
+  --interactive \
+  --rm \
+  --tty \
+  --user $(id -u):$(id -g) \
+  --volume $(pwd):$(pwd) \
+  --volume ~/.cargo:/.cargo \
+  --workdir $(pwd) \
+  trunnion/cargo-acap:1.74.0 \
+  ./target/debug/cargo-acap \
+    --manifest-path `pwd`/app/acap-rust-http-example/Cargo.toml \
+    --no-docker \
+    build --target aarch64
+```
+
+```shell
+cargo run -- \
+--docker-image trunnion/cargo-acap:1.74.0 \
+--manifest-path `pwd`/app/acap-rust-http-example/Cargo.toml \
+build --target aarch64
+
+```
+
 ## Example
 
 ```console

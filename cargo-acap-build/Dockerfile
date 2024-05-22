@@ -100,3 +100,6 @@ ENV \
 # This problem should go away when the rust RFC lands and when the ecosystem has adopted its use.
   CARGO_TARGET_ARMV5TE_AXIS_LINUX_GNUEABI_RUSTFLAGS="--cfg crossbeam_no_atomic_64" \
   CARGO_TARGET_MIPSEL_AXIS_LINUX_GNU_RUSTFLAGS="--cfg crossbeam_no_atomic_64"
+
+COPY bin/cargo-acap /usr/local/bin/cargo-acap
+ENV CARGO_ACAP_NO_DOCKER=1

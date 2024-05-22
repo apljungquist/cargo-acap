@@ -17,6 +17,9 @@ jobs:
         with:
           fetch-depth: 2
       -
+        name: Build cargo-acap
+        run: cargo install --path . --root cargo-acap-build
+      -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       -

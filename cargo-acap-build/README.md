@@ -26,6 +26,9 @@ This folder contains a `Dockerfile`, a `rust-config.toml` for the Rust build, an
 [the `rustc-dev` docs](https://rustc-dev-guide.rust-lang.org/building/prerequisites.html#hardware) for more specific
 guidance.
 
+The user is expected to add also `bin/cargo-acap` before building the image, e.g. like
+`cargo install --path . --root cargo-acap-build`.
+
 ### GitHub Actions
 
 `.github/workflows/` contains two associated GitHub Actions definitions:

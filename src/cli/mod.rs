@@ -30,10 +30,6 @@ pub struct GlobalOptions {
     /// `docker` image to use for cross-compiling
     #[clap(long, default_value = "ghcr.io/trunnion/cargo-acap")]
     docker_image: String,
-
-    /// Cross-compile on host instead of in a Docker container
-    #[clap(long)]
-    no_docker: bool,
 }
 
 #[derive(Parser)]
@@ -44,6 +40,7 @@ enum Subcommand {
 
 #[derive(Debug)]
 pub struct Invocation {
+    no_docker: bool,
     global_options: GlobalOptions,
     cargo_home: PathBuf,
     workspace_root: PathBuf,
@@ -72,6 +69,14 @@ fn cargo_acap_args() -> impl Iterator<Item = OsString> {
     args.into_iter()
 }
 
+fn bool_from_env(key: &str) -> bool {
+    match std::env::var(key).unwrap_or("0".to_string()).as_str() {
+        "0" => false,
+        "1" => true,
+        s => panic!(r#"Expected {} to be one of "0" or "1", but got {:?}"#, key, s)
+    }
+}
+
 impl Invocation {
     pub fn main() -> ! {
         let Args {
@@ -79,6 +84,8 @@ impl Invocation {
             subcommand,
             ..
         } = Args::parse_from(cargo_acap_args());
+
+        let no_docker = bool_from_env("CARGO_ACAP_NO_DOCKER");
 
         let cargo_config = cargo::Config::default().expect("error constructing `cargo` config");
         let cargo_home = cargo_config.home().as_path_unlocked().to_owned();
@@ -119,6 +126,7 @@ impl Invocation {
         };
 
         let invocation = Invocation {
+            no_docker,
             global_options,
             cargo_home,
             workspace_root,
@@ -166,7 +174,7 @@ impl Invocation {
     }
 
     pub fn command(&self, program:&str) -> std::process::Command {
-        if self.global_options.no_docker {
+        if self.no_docker {
             let mut cmd = std::process::Command::new(program);
             cmd.env("CARGO_TARGET_DIR", &self.acap_target().display().to_string());
             return cmd

@@ -38,7 +38,9 @@ requires [Docker](https://docs.docker.com/get-docker/) to be installed and runni
 ```text
 foo/
     Cargo.toml                      Rust project configuration + `[package.metadata.acap]`
-    data/                           Copied to `/usr/local/packages/foo/data/`, i.e. `./data/`
+    cgi.txt                         Optional. If present, HTTPCGIPATHS is set to match.
+    postinstall.sh                  Optional POSTINSTALLSCRIPT is alwasy set to match.
+    otherfiles/                     Other static files to include.
     src/
         main.rs                     `fn main()`
     target/
